@@ -1,13 +1,13 @@
+#include "port/config.h"
+#include "common.h"
+#include "port/port.h"
+
+#include <SDL3/SDL.h>
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "common.h"
-#include "port/config.h"
-#include "port/port.h"
-
-#include <SDL3/SDL.h>
 
 #define CONFIG_FILENAME "config"
 
