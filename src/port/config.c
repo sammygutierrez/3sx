@@ -1,6 +1,6 @@
 #include "port/config.h"
 #include "common.h"
-#include "port/port.h"
+#include "port/prefs.h"
 
 #include <SDL3/SDL.h>
 
@@ -74,7 +74,7 @@ static void Config_Init(Config* config) {
 }
 
 static char* Config_GetPath() {
-    char* pref_path = SDL_GetPrefPath(PORT_ORG_NAME, PORT_APP_NAME);
+    char* pref_path = Prefs_GetPath();
     if (!pref_path) {
         SDL_Log("Failed to get preference path: %s", SDL_GetError());
         return NULL;
