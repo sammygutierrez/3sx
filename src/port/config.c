@@ -57,9 +57,9 @@ static const char* bool_to_string(bool value) {
 }
 
 static const ConfigEntry* get_config_entries(const Config* config, ConfigEntry* entries) {
-    entries[0] = (ConfigEntry) { "fullscreen", CONFIG_TYPE_BOOL, (void*)&config->fullscreen };
-    entries[1] = (ConfigEntry) { "width", CONFIG_TYPE_INT, (void*)&config->width };
-    entries[2] = (ConfigEntry) { "height", CONFIG_TYPE_INT, (void*)&config->height };
+    entries[0] = (ConfigEntry) { "fullscreen", CONFIG_TYPE_BOOL, &config->fullscreen };
+    entries[1] = (ConfigEntry) { "width", CONFIG_TYPE_INT, &config->width };
+    entries[2] = (ConfigEntry) { "height", CONFIG_TYPE_INT, &config->height };
     return entries;
 }
 
