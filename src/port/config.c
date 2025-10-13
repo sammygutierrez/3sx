@@ -10,6 +10,18 @@
 #include <string.h>
 
 #define CONFIG_FILENAME "config"
+#define CONFIG_ENTRY_COUNT 3
+
+typedef enum {
+    CONFIG_TYPE_BOOL,
+    CONFIG_TYPE_INT,
+} ConfigType;
+
+typedef struct {
+    const char* key;
+    ConfigType type;
+    void* value_ptr;
+} ConfigEntry;
 
 static char* trim_whitespace(char* str) {
     char* end;
@@ -43,19 +55,6 @@ static bool parse_bool(const char* value) {
 static const char* bool_to_string(bool value) {
     return value ? "true" : "false";
 }
-
-typedef enum {
-    CONFIG_TYPE_BOOL,
-    CONFIG_TYPE_INT,
-} ConfigType;
-
-typedef struct {
-    const char* key;
-    ConfigType type;
-    void* value_ptr;
-} ConfigEntry;
-
-#define CONFIG_ENTRY_COUNT 3
 
 static const ConfigEntry* get_config_entries(const Config* config, ConfigEntry* entries) {
     entries[0] = (ConfigEntry) { "fullscreen", CONFIG_TYPE_BOOL, (void*)&config->fullscreen };
