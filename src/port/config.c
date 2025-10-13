@@ -14,15 +14,18 @@
 static char* trim_whitespace(char* str) {
     char* end;
 
-    while (isspace((unsigned char)*str))
+    while (isspace((unsigned char)*str)) {
         str++;
+    }
 
-    if (*str == 0)
+    if (*str == 0) {
         return str;
+    }
 
     end = str + strlen(str) - 1;
-    while (end > str && isspace((unsigned char)*end))
+    while (end > str && isspace((unsigned char)*end)) {
         end--;
+    }
 
     end[1] = '\0';
 
@@ -31,8 +34,9 @@ static char* trim_whitespace(char* str) {
 
 static bool parse_bool(const char* value) {
     if (SDL_strcasecmp(value, "true") == 0 || SDL_strcasecmp(value, "yes") == 0 || SDL_strcasecmp(value, "1") == 0 ||
-        SDL_strcasecmp(value, "on") == 0)
+        SDL_strcasecmp(value, "on") == 0) {
         return true;
+    }
     return false;
 }
 
@@ -61,8 +65,9 @@ static const ConfigEntry* get_config_entries(const Config* config, ConfigEntry* 
 }
 
 static void Config_Init(Config* config) {
-    if (!config)
+    if (!config) {
         return;
+    }
 
     config->fullscreen = false;
     config->width = 640;
@@ -90,8 +95,9 @@ static char* Config_GetPath(void) {
 }
 
 bool Config_Load(Config* config) {
-    if (!config)
+    if (!config) {
         return false;
+    }
 
     Config_Init(config);
 
@@ -199,8 +205,9 @@ bool Config_Load(Config* config) {
 }
 
 bool Config_Save(const Config* config) {
-    if (!config)
+    if (!config) {
         return false;
+    }
 
     ConfigEntry entries[CONFIG_ENTRY_COUNT];
     get_config_entries(config, entries);
