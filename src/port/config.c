@@ -18,9 +18,24 @@ typedef enum {
 } ConfigType;
 
 typedef struct {
-    const char* key;
     ConfigType type;
-    void* value_ptr;
+    bool value;
+} ConfigBoolValue;
+
+typedef struct {
+    ConfigType type;
+    int value;
+} ConfigIntValue;
+
+typedef union {
+    ConfigType type;
+    ConfigBoolValue bool_value;
+    ConfigIntValue int_value;
+} ConfigValue;
+
+typedef struct {
+    const char* key;
+    ConfigValue* value;
 } ConfigEntry;
 
 static char* trim_whitespace(char* str) {
@@ -56,10 +71,15 @@ static const char* bool_to_string(bool value) {
     return value ? "true" : "false";
 }
 
-static const ConfigEntry* get_config_entries(const Config* config, ConfigEntry* entries) {
-    entries[0] = (ConfigEntry) { "fullscreen", CONFIG_TYPE_BOOL, &config->fullscreen };
-    entries[1] = (ConfigEntry) { "width", CONFIG_TYPE_INT, &config->width };
-    entries[2] = (ConfigEntry) { "height", CONFIG_TYPE_INT, &config->height };
+static const ConfigEntry* get_config_entries(Config* config, ConfigEntry* entries, ConfigValue* values) {
+    values[0] = (ConfigValue) { .bool_value = { CONFIG_TYPE_BOOL, config->fullscreen } };
+    values[1] = (ConfigValue) { .int_value = { CONFIG_TYPE_INT, config->width } };
+    values[2] = (ConfigValue) { .int_value = { CONFIG_TYPE_INT, config->height } };
+
+    entries[0] = (ConfigEntry) { "fullscreen", &values[0] };
+    entries[1] = (ConfigEntry) { "width", &values[1] };
+    entries[2] = (ConfigEntry) { "height", &values[2] };
+
     return entries;
 }
 
@@ -101,7 +121,8 @@ bool Config_Load(Config* config) {
     Config_Init(config);
 
     ConfigEntry entries[CONFIG_ENTRY_COUNT];
-    get_config_entries(config, entries);
+    ConfigValue values[CONFIG_ENTRY_COUNT];
+    get_config_entries(config, entries, values);
 
     char* config_path = Config_GetPath();
     if (!config_path) {
@@ -158,15 +179,15 @@ bool Config_Load(Config* config) {
                     for (size_t i = 0; i < CONFIG_ENTRY_COUNT; i++) {
                         if (strcmp(key, entries[i].key) == 0) {
                             found = true;
-                            switch (entries[i].type) {
+                            switch (entries[i].value->type) {
                             case CONFIG_TYPE_BOOL:
-                                *(bool*)entries[i].value_ptr = parse_bool(value);
+                                entries[i].value->bool_value.value = parse_bool(value);
                                 break;
                             case CONFIG_TYPE_INT: {
                                 char* endptr;
                                 long val = strtol(value, &endptr, 10);
                                 if (*endptr == '\0' && endptr != value) {
-                                    *(int*)entries[i].value_ptr = (int)val;
+                                    entries[i].value->int_value.value = (int)val;
                                 } else {
                                     SDL_Log("Config warning: Invalid integer value '%s' for %s on line %d",
                                             value,
@@ -199,6 +220,11 @@ bool Config_Load(Config* config) {
 
     SDL_free(file_contents);
 
+    // Copy values back to config struct
+    config->fullscreen = values[0].bool_value.value;
+    config->width = values[1].int_value.value;
+    config->height = values[2].int_value.value;
+
     // Save config to ensure any new entries are written to disk
     return Config_Save(config);
 }
@@ -209,7 +235,8 @@ bool Config_Save(const Config* config) {
     }
 
     ConfigEntry entries[CONFIG_ENTRY_COUNT];
-    get_config_entries(config, entries);
+    ConfigValue values[CONFIG_ENTRY_COUNT];
+    get_config_entries((Config*)config, entries, values);
 
     char* config_path = Config_GetPath();
     if (!config_path) {
@@ -226,12 +253,12 @@ bool Config_Save(const Config* config) {
     SDL_free(config_path);
 
     for (size_t i = 0; i < CONFIG_ENTRY_COUNT; i++) {
-        switch (entries[i].type) {
+        switch (entries[i].value->type) {
         case CONFIG_TYPE_BOOL:
-            SDL_IOprintf(file, "%s = %s\n", entries[i].key, bool_to_string(*(bool*)entries[i].value_ptr));
+            SDL_IOprintf(file, "%s = %s\n", entries[i].key, bool_to_string(entries[i].value->bool_value.value));
             break;
         case CONFIG_TYPE_INT:
-            SDL_IOprintf(file, "%s = %d\n", entries[i].key, *(int*)entries[i].value_ptr);
+            SDL_IOprintf(file, "%s = %d\n", entries[i].key, entries[i].value->int_value.value);
             break;
         }
     }
