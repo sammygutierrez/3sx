@@ -1,11 +1,15 @@
 #ifndef SDL_APP_H
 #define SDL_APP_H
 
+#include "port/config.h"
 #include <SDL3/SDL.h>
 
 extern SDL_Window* window;
 
-int SDLApp_Init();
+/// Initialize SDL application.
+/// @param config Pointer to configuration to use for initialization
+/// @return 0 on success, non-zero on failure
+int SDLApp_Init(Config* config);
 void SDLApp_Quit();
 
 /// @brief Poll SDL events.

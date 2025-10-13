@@ -32,8 +32,6 @@ static bool should_save_screenshot = false;
 static Uint64 last_mouse_motion_time = 0;
 static const int mouse_hide_delay_ms = 2000; // 2 seconds
 
-static Config app_config = { 0 };
-
 static void create_screen_texture() {
     if (screen_texture != NULL) {
         SDL_DestroyTexture(screen_texture);
@@ -46,10 +44,7 @@ static void create_screen_texture() {
     SDL_SetTextureScaleMode(screen_texture, SDL_SCALEMODE_LINEAR);
 }
 
-int SDLApp_Init() {
-    // Load config from file (will use defaults if file doesn't exist)
-    Config_Load(&app_config);
-
+int SDLApp_Init(Config* config) {
     SDL_SetAppMetadata(app_name, "0.1", NULL);
     SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_PREFER_LIBDECOR, "1");
     SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
@@ -60,11 +55,11 @@ int SDLApp_Init() {
     }
 
     SDL_WindowFlags window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-    if (app_config.fullscreen) {
+    if (config->fullscreen) {
         window_flags |= SDL_WINDOW_FULLSCREEN;
     }
 
-    if (!SDL_CreateWindowAndRenderer(app_name, app_config.width, app_config.height, window_flags, &window, &renderer)) {
+    if (!SDL_CreateWindowAndRenderer(app_name, config->width, config->height, window_flags, &window, &renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return 1;
     }

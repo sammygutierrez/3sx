@@ -1,5 +1,6 @@
 #include "sf33rd/Source/Game/main.h"
 #include "common.h"
+#include "port/config.h"
 #include "port/sdl/sdl_app.h"
 #include "sf33rd/AcrSDK/common/mlPAD.h"
 #include "sf33rd/AcrSDK/ps2/flps2debug.h"
@@ -137,9 +138,14 @@ static void step_1() {
 
 int main() {
     bool is_running = true;
+    Config config = { 0 };
 
     init_windows_console();
-    SDLApp_Init();
+
+    // Load config from file (will use defaults if file doesn't exist)
+    Config_Load(&config);
+
+    SDLApp_Init(&config);
 
     while (is_running) {
         is_running = SDLApp_PollEvents();
