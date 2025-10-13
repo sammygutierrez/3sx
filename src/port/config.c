@@ -18,7 +18,7 @@ static char* trim_whitespace(char* str) {
         str++;
     }
 
-    if (*str == 0) {
+    if (*str == '\0') {
         return str;
     }
 
