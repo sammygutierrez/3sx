@@ -1,6 +1,6 @@
 #include "port/resources.h"
-#include "port/sdl/sdl_app.h"
 #include "port/port.h"
+#include "port/sdl/sdl_app.h"
 
 #include <SDL3/SDL.h>
 

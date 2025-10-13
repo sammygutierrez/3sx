@@ -30,8 +30,8 @@ static char* trim_whitespace(char* str) {
 }
 
 static bool parse_bool(const char* value) {
-    if (SDL_strcasecmp(value, "true") == 0 || SDL_strcasecmp(value, "yes") == 0 ||
-        SDL_strcasecmp(value, "1") == 0 || SDL_strcasecmp(value, "on") == 0)
+    if (SDL_strcasecmp(value, "true") == 0 || SDL_strcasecmp(value, "yes") == 0 || SDL_strcasecmp(value, "1") == 0 ||
+        SDL_strcasecmp(value, "on") == 0)
         return true;
     return false;
 }
@@ -54,9 +54,9 @@ typedef struct {
 #define CONFIG_ENTRY_COUNT 3
 
 static const ConfigEntry* get_config_entries(const Config* config, ConfigEntry* entries) {
-    entries[0] = (ConfigEntry){"fullscreen", CONFIG_TYPE_BOOL, (void*)&config->fullscreen};
-    entries[1] = (ConfigEntry){"width", CONFIG_TYPE_INT, (void*)&config->width};
-    entries[2] = (ConfigEntry){"height", CONFIG_TYPE_INT, (void*)&config->height};
+    entries[0] = (ConfigEntry) { "fullscreen", CONFIG_TYPE_BOOL, (void*)&config->fullscreen };
+    entries[1] = (ConfigEntry) { "width", CONFIG_TYPE_INT, (void*)&config->width };
+    entries[2] = (ConfigEntry) { "height", CONFIG_TYPE_INT, (void*)&config->height };
     return entries;
 }
 
@@ -164,7 +164,9 @@ bool Config_Load(Config* config) {
                                     *(int*)entries[i].value_ptr = (int)val;
                                 } else {
                                     SDL_Log("Config warning: Invalid integer value '%s' for %s on line %d",
-                                            value, key, line_number);
+                                            value,
+                                            key,
+                                            line_number);
                                 }
                                 break;
                             }
@@ -231,4 +233,3 @@ bool Config_Save(const Config* config) {
     SDL_CloseIO(file);
     return true;
 }
-

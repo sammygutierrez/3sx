@@ -32,7 +32,7 @@ static bool should_save_screenshot = false;
 static Uint64 last_mouse_motion_time = 0;
 static const int mouse_hide_delay_ms = 2000; // 2 seconds
 
-static Config app_config = {0};
+static Config app_config = { 0 };
 
 static void create_screen_texture() {
     if (screen_texture != NULL) {
@@ -64,12 +64,7 @@ int SDLApp_Init() {
         window_flags |= SDL_WINDOW_FULLSCREEN;
     }
 
-    if (!SDL_CreateWindowAndRenderer(app_name,
-                                     app_config.width,
-                                     app_config.height,
-                                     window_flags,
-                                     &window,
-                                     &renderer)) {
+    if (!SDL_CreateWindowAndRenderer(app_name, app_config.width, app_config.height, window_flags, &window, &renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return 1;
     }
