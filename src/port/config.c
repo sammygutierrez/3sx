@@ -73,7 +73,7 @@ static void Config_Init(Config* config) {
     config->height = 480;
 }
 
-static char* Config_GetPath(void) {
+static char* Config_GetPath() {
     char* pref_path = SDL_GetPrefPath(PORT_ORG_NAME, PORT_APP_NAME);
     if (!pref_path) {
         SDL_Log("Failed to get preference path: %s", SDL_GetError());
