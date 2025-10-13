@@ -1,0 +1,6 @@
+# Run the game in fullscreen mode
+fullscreen = false
+# Window width in pixels
+width = 640
+# Window height in pixels
+height = 480

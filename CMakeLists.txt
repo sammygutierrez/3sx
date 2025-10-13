@@ -141,6 +141,11 @@ if(APPLE)
         ${SDL3_ROOT}/lib/libSDL3.0.dylib
         DESTINATION 3SX.app/Contents/Frameworks
     )
+
+    install(FILES
+        resources/config.default
+        DESTINATION 3SX.app/Contents/Resources
+    )
 elseif(WIN32)
     install(TARGETS 3sx
 		RUNTIME_DEPENDENCY_SET deps
@@ -159,6 +164,11 @@ elseif(WIN32)
 		POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
 		DESTINATION bin
 	)
+
+	install(FILES
+		resources/config.default
+		DESTINATION bin
+	)
 elseif(UNIX)
     install(TARGETS 3sx
         RUNTIME DESTINATION bin
@@ -170,6 +180,11 @@ elseif(UNIX)
         ${FFMPEG_SO}
         ${SDL3_ROOT}/lib/libSDL3.so
         DESTINATION lib
+    )
+
+    install(FILES
+        resources/config.default
+        DESTINATION bin
     )
 endif()
 

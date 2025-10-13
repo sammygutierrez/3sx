@@ -10,13 +10,9 @@ typedef struct {
     int height;      ///< Window/screen height in pixels
 } Config;
 
-/// Load config from file, using defaults if file doesn't exist.
+/// Load config from file. Creates default config file if it doesn't exist.
+/// @param config Pointer to Config structure to populate
 /// @return `true` on success, `false` on failure.
 bool Config_Load(Config* config);
-
-/// Save config to file.
-/// @param config Pointer to Config structure to save
-/// @return `true` on success, `false` on failure.
-bool Config_Save(const Config* config);
 
 #endif // CONFIG_H
