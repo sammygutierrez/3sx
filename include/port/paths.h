@@ -6,7 +6,7 @@
 /// @return Allocated preference path string, or NULL on failure
 char* Paths_GetPrefsPath();
 
-/// Get the application base path (where resources are located).
+/// Get the application base path.
 /// The returned string must be freed with SDL_free().
 /// @return Allocated base path string, or NULL on failure
 char* Paths_GetBasePath();
