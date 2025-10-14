@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-/// Configuration structure for video settings.
+/// Configuration structure for app settings.
 typedef struct {
     bool fullscreen; ///< Fullscreen mode enabled
     int width;       ///< Window/screen width in pixels

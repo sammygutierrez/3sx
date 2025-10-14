@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define CONFIG_FILENAME "config"
+#define CONFIG_DEFAULT_FILENAME "config.default"
 #define CONFIG_ENTRY_COUNT 3
 
 typedef enum {
@@ -263,7 +264,7 @@ static void Config_Init() {
     }
 
     char* default_config_path = NULL;
-    SDL_asprintf(&default_config_path, "%sconfig.default", base_path);
+    SDL_asprintf(&default_config_path, "%s%s", base_path, CONFIG_DEFAULT_FILENAME);
     SDL_free(base_path);
 
     if (!default_config_path) {
