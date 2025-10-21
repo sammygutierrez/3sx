@@ -5,6 +5,7 @@
 
 #include "sf33rd/Source/Game/ui/sc_sub.h"
 #include "common.h"
+#include "port/sdl/sdl_game_renderer.h"
 #include "sf33rd/AcrSDK/ps2/flps2render.h"
 #include "sf33rd/AcrSDK/ps2/foundaps2.h"
 #include "sf33rd/Source/Common/PPGFile.h"
@@ -19,7 +20,6 @@
 #include "sf33rd/Source/Game/system/sysdir.h"
 #include "sf33rd/Source/Game/system/work_sys.h"
 #include "sf33rd/Source/Game/ui/sc_data.h"
-#include "sf33rd/Source/PS2/ps2Quad.h"
 #include "structs.h"
 
 #define TO_UV_256(val) ((val) / 256.0f)
@@ -2171,7 +2171,7 @@ void dispButtonImage(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
 
     oricol.color = -1;
     oricol.argb.a = (0xFF - cl);
-    prm.texCode = ppgGetUsingTextureHandle(&ppgScrTex, 5) | (ppgGetUsingPaletteHandle(&ppgScrPalShot, 0) << 0x10);
+    prm.tex_code = ppgGetUsingTextureHandle(&ppgScrTex, 5) | (ppgGetUsingPaletteHandle(&ppgScrPalShot, 0) << 0x10);
     prm.v[0].x = px;
     prm.v[0].y = py;
     prm.v[3].x = (px + sx);
@@ -2183,8 +2183,8 @@ void dispButtonImage(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
     prm.t[3].s = (scrnAddTex1UV[ix][0] + scrnAddTex1UV[ix][2]) / 256.0f;
     prm.t[0].t = scrnAddTex1UV[ix][1] / 128.0f;
     prm.t[3].t = (scrnAddTex1UV[ix][1] + scrnAddTex1UV[ix][3]) / 128.0f;
-    flSetRenderState(FLRENDER_TEXSTAGE0, prm.texCode);
-    ps2SeqsRenderQuad_A2(&prm, oricol.color);
+    flSetRenderState(FLRENDER_TEXSTAGE0, prm.tex_code);
+    SDLGameRenderer_DrawSprite(&prm, oricol.color);
 }
 
 void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
@@ -2197,7 +2197,7 @@ void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
 
     oricol.color = -1;
     oricol.argb.a = (0xFF - cl);
-    prm.texCode = ppgGetUsingTextureHandle(&ppgScrTex, 5) | (ppgGetUsingPaletteHandle(&ppgScrPalShot, 0) << 0x10);
+    prm.tex_code = ppgGetUsingTextureHandle(&ppgScrTex, 5) | (ppgGetUsingPaletteHandle(&ppgScrPalShot, 0) << 0x10);
     prm.v[0].x = px * Frame_Zoom_X;
     prm.v[0].y = py * Frame_Zoom_Y;
     prm.v[3].x = Frame_Zoom_X * (px + sx);
@@ -2207,8 +2207,8 @@ void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
     prm.t[3].s = (scrnAddTex1UV[ix][0] + scrnAddTex1UV[ix][2]) / 256.0f;
     prm.t[0].t = scrnAddTex1UV[ix][1] / 128.0f;
     prm.t[3].t = (scrnAddTex1UV[ix][1] + scrnAddTex1UV[ix][3]) / 128.0f;
-    flSetRenderState(FLRENDER_TEXSTAGE0, prm.texCode);
-    ps2SeqsRenderQuad_A2(&prm, oricol.color);
+    flSetRenderState(FLRENDER_TEXSTAGE0, prm.tex_code);
+    SDLGameRenderer_DrawSprite(&prm, oricol.color);
 }
 
 void dispSaveLoadTitle(void* ewk) {
@@ -2227,8 +2227,8 @@ void dispSaveLoadTitle(void* ewk) {
     mlt_obj_matrix(wk, 0);
     oricol.color = -1;
     oricol.argb.a = (0xFF - wk->my_clear_level);
-    prm.texCode = ppgGetUsingTextureHandle(&ppgScrTex, 6) | (ppgGetUsingPaletteHandle(&ppgScrPalOpt, 0) << 0x10);
-    flSetRenderState(FLRENDER_TEXSTAGE0, prm.texCode);
+    prm.tex_code = ppgGetUsingTextureHandle(&ppgScrTex, 6) | (ppgGetUsingPaletteHandle(&ppgScrPalOpt, 0) << 0x10);
+    flSetRenderState(FLRENDER_TEXSTAGE0, prm.tex_code);
     prm.t[0].s = 0.0f;
     prm.t[3].s = 1.0f;
     prm.t[0].t = TO_UV_128(0.0f);
@@ -2243,7 +2243,7 @@ void dispSaveLoadTitle(void* ewk) {
     for (i = 0; i < 3; i++) {
         njCalcPoint(NULL, (Vec3*)&pos[0], &prm.v[0]);
         njCalcPoint(NULL, (Vec3*)&pos[1], &prm.v[3]);
-        ps2SeqsRenderQuad_A2(&prm, oricol.color);
+        SDLGameRenderer_DrawSprite(&prm, oricol.color);
         step_t += 36.0f;
         prm.t[0].t = prm.t[3].t;
         prm.t[3].t = step_t / 128.0f;

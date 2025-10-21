@@ -5,12 +5,12 @@
 
 #include "sf33rd/Source/Game/rendering/dc_ghost.h"
 #include "common.h"
+#include "port/sdl/sdl_game_renderer.h"
 #include "sf33rd/AcrSDK/ps2/flps2render.h"
 #include "sf33rd/AcrSDK/ps2/foundaps2.h"
 #include "sf33rd/Source/Common/PPGFile.h"
 #include "sf33rd/Source/Game/rendering/aboutspr.h"
 #include "sf33rd/Source/Game/rendering/color3rd.h"
-#include "sf33rd/Source/PS2/ps2Quad.h"
 #include "structs.h"
 
 #include <string.h>
@@ -171,16 +171,16 @@ void njdp2d_init() {
 void njdp2d_draw() {
     Quad prm;
     s32 i;
+    s32 j;
 
     for (i = njdp2d_w.ix1st; i != -1; i = njdp2d_w.prim[i].next) {
         switch (njdp2d_w.prim[i].type) {
         case 0:
-            prm.v[0] = njdp2d_w.prim[i].v[0];
-            prm.v[1] = njdp2d_w.prim[i].v[1];
-            prm.v[2] = njdp2d_w.prim[i].v[2];
-            prm.v[3] = njdp2d_w.prim[i].v[3];
+            for (j = 0; j < 4; j++) {
+                prm.v[j] = njdp2d_w.prim[i].v[j];
+            }
 
-            ps2SeqsRenderQuad_B(&prm, njdp2d_w.prim[i].col);
+            SDLGameRenderer_DrawSolidQuad(&prm, njdp2d_w.prim[i].col);
             break;
 
         case 1:

@@ -467,15 +467,38 @@ static void draw_quad(const SDLGameRenderer_Vertex* vertices, bool textured) {
     push_render_task(&task);
 }
 
-void SDLGameRenderer_DrawTexturedQuad(const SDLGameRenderer_Vertex* vertices) {
+void SDLGameRenderer_DrawTexturedQuad(const Sprite* sprite, unsigned int color) {
+    SDLGameRenderer_Vertex vertices[4];
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        vertices[i].coord.x = sprite->v[i].x;
+        vertices[i].coord.y = sprite->v[i].y;
+        vertices[i].coord.z = sprite->v[i].z;
+        vertices[i].coord.w = 1.0f;
+        vertices[i].color = color;
+        vertices[i].tex_coord = sprite->t[i];
+    }
+
     draw_quad(vertices, true);
 }
 
-void SDLGameRenderer_DrawSolidQuad(const SDLGameRenderer_Vertex* vertices) {
+void SDLGameRenderer_DrawSolidQuad(const Quad* sprite, unsigned int color) {
+    SDLGameRenderer_Vertex vertices[4];
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        vertices[i].coord.x = sprite->v[i].x;
+        vertices[i].coord.y = sprite->v[i].y;
+        vertices[i].coord.z = sprite->v[i].z;
+        vertices[i].coord.w = 1.0f;
+        vertices[i].color = color;
+    }
+
     draw_quad(vertices, false);
 }
 
-void SDLGameRenderer_DrawSprite(const SDLGameRenderer_Sprite* sprite, unsigned int color) {
+void SDLGameRenderer_DrawSprite(const Sprite* sprite, unsigned int color) {
     SDLGameRenderer_Vertex vertices[4];
     SDL_zeroa(vertices);
 
@@ -503,8 +526,8 @@ void SDLGameRenderer_DrawSprite(const SDLGameRenderer_Sprite* sprite, unsigned i
     draw_quad(vertices, true);
 }
 
-void SDLGameRenderer_DrawSprite2(const SDLGameRenderer_Sprite2* sprite2) {
-    SDLGameRenderer_Sprite sprite;
+void SDLGameRenderer_DrawSprite2(const Sprite2* sprite2) {
+    Sprite sprite;
     SDL_zero(sprite);
 
     sprite.v[0] = sprite2->v[0];

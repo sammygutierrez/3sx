@@ -5,6 +5,7 @@
 
 #include "sf33rd/Source/Game/rendering/mtrans.h"
 #include "common.h"
+#include "port/sdl/sdl_game_renderer.h"
 #include "sf33rd/AcrSDK/ps2/flps2render.h"
 #include "sf33rd/AcrSDK/ps2/foundaps2.h"
 #include "sf33rd/Source/Common/PPGFile.h"
@@ -17,12 +18,18 @@
 #include "sf33rd/Source/Game/rendering/texcash.h"
 #include "sf33rd/Source/Game/rendering/texgroup.h"
 #include "sf33rd/Source/Game/system/work_sys.h"
-#include "sf33rd/Source/PS2/ps2Quad.h"
 #include "structs.h"
 
 #include <SDL3/SDL.h>
 
 #define PRIO_BASE_SIZE 128
+
+typedef struct {
+    Sprite2* chip;
+    u16 sprTotal;
+    u16 sprMax;
+    s8 up[24];
+} SpriteChipSet;
 
 // sbss
 s32 curr_bright;
@@ -1594,14 +1601,14 @@ void seqsAfterProcess() {
 
         for (i = 0; i < seqs_w.sprTotal; i++) {
             if (seqs_w.up[seqs_w.chip[i].id]) {
-                val = seqs_w.chip[i].texCode;
+                val = seqs_w.chip[i].tex_code;
 
                 if (keep != val) {
                     keep = val;
                     flSetRenderState(FLRENDER_TEXSTAGE0, val);
                 }
 
-                ps2SeqsRenderQuad_Ax(&seqs_w.chip[i]);
+                SDLGameRenderer_DrawSprite2(&seqs_w.chip[i]);
             }
         }
     }
@@ -1631,11 +1638,11 @@ s32 seqsStoreChip(f32 x, f32 y, s32 w, s32 h, s32 gix, s32 code, s32 attr, s32 a
     if (!(attr & 0x2000)) {
         u = (code & 0xF) * 16;
         v = code & 0xF0;
-        chip->texCode = ppgGetUsingTextureHandle(NULL, gix + (code >> 8));
+        chip->tex_code = ppgGetUsingTextureHandle(NULL, gix + (code >> 8));
     } else {
         u = (code & 7) * 32;
         v = (code & 0x38) * 4;
-        chip->texCode = ppgGetUsingTextureHandle(NULL, gix + (code >> 6));
+        chip->tex_code = ppgGetUsingTextureHandle(NULL, gix + (code >> 6));
     }
 
     appRenewTempPriority_1_Chip();
@@ -1656,8 +1663,8 @@ s32 seqsStoreChip(f32 x, f32 y, s32 w, s32 h, s32 gix, s32 code, s32 attr, s32 a
         chip->t[1].t = (v + h + dy) / 256.0f;
     }
 
-    chip->texCode |= ppgGetUsingPaletteHandle(NULL, attr & 0x1FF) << 16;
-    chip->vtxColor = curr_bright | ((0xFF - alpha) << 24);
+    chip->tex_code |= ppgGetUsingPaletteHandle(NULL, attr & 0x1FF) << 16;
+    chip->vertex_color = curr_bright | ((0xFF - alpha) << 24);
     chip->id = id;
     seqs_w.sprTotal += 1;
 

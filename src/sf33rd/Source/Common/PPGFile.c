@@ -1,5 +1,6 @@
 #include "sf33rd/Source/Common/PPGFile.h"
 #include "common.h"
+#include "port/sdl/sdl_game_renderer.h"
 #include "sf33rd/AcrSDK/common/plcommon.h"
 #include "sf33rd/AcrSDK/ps2/flps2render.h"
 #include "sf33rd/AcrSDK/ps2/flps2vram.h"
@@ -7,7 +8,6 @@
 #include "sf33rd/Source/Common/MemMan.h"
 #include "sf33rd/Source/Compress/Lz77/Lz77Dec.h"
 #include "sf33rd/Source/Compress/zlibApp.h"
-#include "sf33rd/Source/PS2/ps2Quad.h"
 #include "structs.h"
 
 #include <SDL3/SDL.h>
@@ -142,11 +142,14 @@ void ppgWriteQuadOnly(Vertex* pos, u32 col, u32 texCode) {
     flSetRenderState(FLRENDER_TEXSTAGE0, texCode);
 
     for (i = 0; i < 4; i++) {
-        prm.v[i] = ((_Vertex*)pos)[i].v;
-        prm.t[i] = ((_Vertex*)pos)[i].t;
+        prm.v[i].x = pos[i].x;
+        prm.v[i].y = pos[i].y;
+        prm.v[i].z = pos[i].z;
+        prm.t[i].s = pos[i].s;
+        prm.t[i].t = pos[i].t;
     }
 
-    ps2SeqsRenderQuad_A(&prm, col);
+    SDLGameRenderer_DrawTexturedQuad(&prm, col);
 }
 
 void ppgWriteQuadOnly2(Vertex* pos, u32 col, u32 texCode) {
@@ -154,12 +157,18 @@ void ppgWriteQuadOnly2(Vertex* pos, u32 col, u32 texCode) {
 
     flSetRenderState(FLRENDER_TEXSTAGE0, texCode);
 
-    prm.v[0] = ((_Vertex*)pos)[0].v;
-    prm.t[0] = ((_Vertex*)pos)[0].t;
-    prm.v[3] = ((_Vertex*)pos)[3].v;
-    prm.t[3] = ((_Vertex*)pos)[3].t;
+    prm.v[0].x = pos[0].x;
+    prm.v[0].y = pos[0].y;
+    prm.v[0].z = pos[0].z;
+    prm.t[0].s = pos[0].s;
+    prm.t[0].t = pos[0].t;
+    prm.v[3].x = pos[3].x;
+    prm.v[3].y = pos[3].y;
+    prm.v[3].z = pos[3].z;
+    prm.t[3].s = pos[3].s;
+    prm.t[3].t = pos[3].t;
 
-    ps2SeqsRenderQuad_A2(&prm, col);
+    SDLGameRenderer_DrawSprite(&prm, col);
 }
 
 s32 ppgWriteQuadWithST_B(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 cix) {

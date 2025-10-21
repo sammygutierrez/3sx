@@ -1,18 +1,8 @@
 #ifndef SDL_GAME_RENDERER_H
 #define SDL_GAME_RENDERER_H
 
+#include "structs.h"
 #include <SDL3/SDL.h>
-
-typedef struct SDLGameRenderer_Vec3 {
-    float x;
-    float y;
-    float z;
-} SDLGameRenderer_Vec3;
-
-typedef struct SDLGameRenderer_TexCoord {
-    float s;
-    float t;
-} SDLGameRenderer_TexCoord;
 
 typedef struct SDLGameRenderer_Vertex {
     struct {
@@ -22,22 +12,26 @@ typedef struct SDLGameRenderer_Vertex {
         float w;
     } coord;
     unsigned int color;
-    SDLGameRenderer_TexCoord tex_coord;
+    TexCoord tex_coord;
 } SDLGameRenderer_Vertex;
 
-typedef struct SDLGameRenderer_Sprite {
-    SDLGameRenderer_Vec3 v[4];
-    SDLGameRenderer_TexCoord t[4];
-    unsigned int tex_code;
-} SDLGameRenderer_Sprite;
+typedef struct Quad {
+    Vec3 v[4];
+} Quad;
 
-typedef struct SDLGameRenderer_Sprite2 {
-    SDLGameRenderer_Vec3 v[2];
-    SDLGameRenderer_TexCoord t[2];
+typedef struct Sprite {
+    Vec3 v[4];
+    TexCoord t[4];
+    unsigned int tex_code;
+} Sprite;
+
+typedef struct Sprite2 {
+    Vec3 v[2];
+    TexCoord t[2];
     unsigned int vertex_color;
     unsigned int tex_code;
     unsigned int id;
-} SDLGameRenderer_Sprite2;
+} Sprite2;
 
 extern SDL_Texture* cps3_canvas;
 
@@ -53,9 +47,9 @@ void SDLGameRenderer_CreatePalette(unsigned int ph);
 void SDLGameRenderer_DestroyPalette(unsigned int palette_handle);
 void SDLGameRenderer_UnlockPalette(unsigned int ph);
 void SDLGameRenderer_SetTexture(unsigned int th);
-void SDLGameRenderer_DrawTexturedQuad(const SDLGameRenderer_Vertex* vertices);
-void SDLGameRenderer_DrawSolidQuad(const SDLGameRenderer_Vertex* vertices);
-void SDLGameRenderer_DrawSprite(const SDLGameRenderer_Sprite* sprite, unsigned int color);
-void SDLGameRenderer_DrawSprite2(const SDLGameRenderer_Sprite2* sprite2);
+void SDLGameRenderer_DrawTexturedQuad(const Sprite* sprite, unsigned int color);
+void SDLGameRenderer_DrawSolidQuad(const Quad* vertices, unsigned int color);
+void SDLGameRenderer_DrawSprite(const Sprite* sprite, unsigned int color);
+void SDLGameRenderer_DrawSprite2(const Sprite2* sprite2);
 
 #endif

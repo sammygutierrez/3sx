@@ -21,7 +21,6 @@
 #include "sf33rd/Source/Game/system/work_sys.h"
 #include "sf33rd/Source/Game/ui/sc_sub.h"
 #include "sf33rd/Source/PS2/mc/savesub.h"
-#include "sf33rd/Source/PS2/ps2Quad.h"
 #include "structs.h"
 
 #if !defined(TARGET_PS2)
