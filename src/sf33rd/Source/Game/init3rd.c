@@ -27,7 +27,6 @@
 #include <string.h>
 #endif
 
-f32 Keep_Zoom_X;
 s8 Test_Cursor;
 
 const u8 Difficult_V_Data[2][2] = { { 0, 0 }, { 1, 2 } };
@@ -62,7 +61,6 @@ void Init_Task_1st(struct _TASK* task_ptr) {
     Bg_TexInit();
     Scrscreen_Init();
     effect_work_init();
-    Usage = 7;
     Max_vitality = 160;
     reset_NG_flag = 0;
     Break_Into = 0;
@@ -126,7 +124,6 @@ void Init_Task_1st(struct _TASK* task_ptr) {
     save_w[5].Time_Limit = -1;
     Setup_Difficult_V();
     Setup_Limit_Time();
-    Keep_Zoom_X = Screen_Zoom_X;
     Reset_Bootrom = 1;
     cpReadyTask(TASK_RESET, Reset_Task);
     Switch_Type = 0;
@@ -188,8 +185,6 @@ void Init_Task_2nd(struct _TASK* task_ptr) {
     }
 
     task_ptr->r_no[0] += 1;
-    Setup_Disp_Size(0);
-    Screen_Zoom_X = Keep_Zoom_X;
 }
 
 void Init_Task_End(struct _TASK* task_ptr) {
@@ -198,11 +193,7 @@ void Init_Task_End(struct _TASK* task_ptr) {
     task_ptr->r_no[1] = 0;
     G_No[0] = 1;
     cpReadyTask(TASK_ENTRY, Entry_Task);
-
-    if (Usage == 7) {
-        cpReadyTask(TASK_DEBUG, Debug_Task);
-    }
-
+    cpReadyTask(TASK_DEBUG, Debug_Task);
     cpExitTask(TASK_INIT);
     Forbid_Reset = 0;
 }

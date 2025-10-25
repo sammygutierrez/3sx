@@ -108,20 +108,11 @@ void Game_Task(struct _TASK* task_ptr) {
     void (*Main_Jmp_Tbl[3])(struct _TASK*) = { Wait_Auto_Load, Loop_Demo, Game };
 
     init_color_trans_req();
-    ff = Process_Counter;
-
-    if ((Usage == 7) && !Turbo) {
-        ff = sysFF;
-    }
+    ff = sysFF;
 
     for (ix = 0; ix < ff; ix++) {
         if (ix == ff - 1) {
             No_Trans = 0;
-
-            if (Turbo != 0 && (Process_Counter > 1) && (Turbo_Timer != 5)) {
-                Play_Game = 0;
-                break;
-            }
         } else {
             No_Trans = 1;
         }
@@ -714,11 +705,7 @@ void Game03() {
                 Switch_Screen_Init(0);
 
                 if (Country == 3) {
-                    if (Screen_PAL == 8) {
-                        Rep_Game_Infor[10].play_type = 3;
-                    } else {
-                        Rep_Game_Infor[10].play_type = 4;
-                    }
+                    Rep_Game_Infor[10].play_type = 4;
                 }
 
                 break;

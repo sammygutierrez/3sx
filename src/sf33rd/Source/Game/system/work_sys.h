@@ -4,7 +4,6 @@
 #include "structs.h"
 #include "types.h"
 
-extern u32 current_task_num;
 extern struct _SYSTEM_W sys_w;
 extern struct _VM_W vm_w;
 extern _EXTRA_OPTION ck_ex_option;
@@ -33,7 +32,6 @@ extern u16 p4sw_0;
 /// Player 4 previous inputs (unused)
 extern u16 p4sw_1;
 
-extern u8 Process_Counter;
 extern u32 system_timer;
 extern u8 Interface_Type[2];
 extern s32 X_Adjust;
@@ -43,10 +41,6 @@ extern s32 Y_Adjust_Buff[3];
 extern u8 Disp_Size_H;
 extern u8 Disp_Size_V;
 extern u8 No_Trans;
-extern u8 Turbo;
-extern u8 Turbo_Timer;
-extern s16 Correct_X[4];
-extern s16 Correct_Y[4];
 extern u8 Interrupt_Flag;
 
 /// Controller 1 inputs
@@ -68,22 +62,10 @@ extern s8 Gill_Appear_Flag;
 /// `PLsw[i][0]` holds current inputs for controller `i`. `PLsw[i][1]` – previous button presses
 extern u16 PLsw[2][2];
 
-extern u8 Screen_PAL;
 extern BG_POS bg_pos[8];
 extern FM_POS fm_pos[8];
 extern BackgroundParameters bg_prm[8];
-extern s32 sca_x;
-extern s32 sca_y;
 extern f32 scr_sc;
-extern f32 Screen_Zoom_X;
-extern f32 Screen_Zoom_Y;
-extern f32 SA_Zoom_X;
-extern f32 SA_Zoom_Y;
-extern f32 Frame_Zoom_X;
-extern f32 Frame_Zoom_Y;
-extern s32 Zoom_Base_Position_X;
-extern s32 Zoom_Base_Position_Y;
-extern s32 Zoom_Base_Position_Z;
 
 extern struct _SAVE_W save_w[6];
 extern Permission permission_player[6];

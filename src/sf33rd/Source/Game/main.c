@@ -68,7 +68,7 @@ void distributeScratchPadAddress();
 void appCopyKeyData();
 u8* mppMalloc(u32 size);
 void njUserInit();
-s32 njUserMain();
+void njUserMain();
 void cpLoopTask();
 void cpInitTask();
 
@@ -192,7 +192,8 @@ static void game_step_0() {
     flPADGetALL();
     keyConvert();
 
-    if (((Usage == 7) || (Usage == 2)) && !test_flag) {
+#if defined(DEBUG)
+    if (!test_flag) {
         if (mpp_w.sysStop) {
             sysSLOW = 1;
 
@@ -239,6 +240,7 @@ static void game_step_0() {
             mpp_w.sysStop = true;
         }
     }
+#endif
 
     Interrupt_Flag = 0;
 
@@ -345,32 +347,13 @@ void njUserInit() {
     }
 
     Interrupt_Timer = 0;
-    SA_Zoom_X = 0.0f;
-    SA_Zoom_Y = 0.0f;
     Disp_Size_H = 100;
     Disp_Size_V = 100;
     Country = 4;
-    Screen_PAL = 0;
-    Turbo = 0;
 
     if (Country == 0) {
         while (1) {}
     }
-
-    Turbo_Timer = 1;
-    Screen_Zoom_X = 1.0f;
-    Screen_Zoom_Y = 1.0f;
-    Setup_Disp_Size(0);
-    Correct_X[0] = 0;
-    Correct_Y[0] = 0;
-    Frame_Zoom_X = Screen_Zoom_X + SA_Zoom_X;
-    Frame_Zoom_Y = Screen_Zoom_Y + SA_Zoom_Y;
-    Zoom_Base_Position_X = 0;
-    Zoom_Base_Position_Y = 0;
-    Zoom_Base_Position_Z = 0;
-    sys_w.disp.now = sys_w.disp.new = 1;
-    sys_w.pause = 0;
-    sys_w.reset = 0;
 
     Init_sound_system();
     Init_bgm_work();
@@ -379,7 +362,7 @@ void njUserInit() {
     cpReadyTask(TASK_INIT, Init_Task);
 }
 
-s32 njUserMain() {
+void njUserMain() {
     CPU_Time_Lag[0] = 0;
     CPU_Time_Lag[1] = 0;
     CPU_Rec[0] = 0;
@@ -388,47 +371,37 @@ s32 njUserMain() {
     Check_Replay_Status(0, Replay_Status[0]);
     Check_Replay_Status(1, Replay_Status[1]);
 
-    Frame_Zoom_X = Screen_Zoom_X + SA_Zoom_X;
-    Frame_Zoom_Y = Screen_Zoom_Y + SA_Zoom_Y;
+    cpLoopTask();
 
-    if (sys_w.disp.now == sys_w.disp.new) {
-        cpLoopTask();
+    if ((Game_pause != 0x81) && (Mode_Type == MODE_VERSUS) && (Play_Mode == 1)) {
+        if ((gs.plw[0].wu.operator == 0) && (CPU_Rec[0] == 0) && (Replay_Status[0] == 1)) {
+            p1sw_0 = 0;
 
-        if ((Game_pause != 0x81) && (Mode_Type == MODE_VERSUS) && (Play_Mode == 1)) {
-            if ((gs.plw[0].wu.operator == 0) && (CPU_Rec[0] == 0) && (Replay_Status[0] == 1)) {
-                p1sw_0 = 0;
+            Check_Replay_Status(0, 1);
 
-                Check_Replay_Status(0, 1);
-
-                if (Debug_w[0x21]) {
-                    flPrintColor(0xFFFFFFFF);
-                    flPrintL(0x10, 0xA, "FAKE REC! PL1");
-                }
-            }
-
-            if ((gs.plw[1].wu.operator == 0) && (CPU_Rec[1] == 0) && (Replay_Status[1] == 1)) {
-                p2sw_0 = 0;
-
-                Check_Replay_Status(1, 1);
-
-                if (Debug_w[0x21]) {
-                    flPrintColor(0xFFFFFFFF);
-                    flPrintL(0x10, 0xA, "FAKE REC!     PL2");
-                }
+            if (Debug_w[0x21]) {
+                flPrintColor(0xFFFFFFFF);
+                flPrintL(0x10, 0xA, "FAKE REC! PL1");
             }
         }
-    } else {
-        sys_w.disp.now = sys_w.disp.new;
-    }
 
-    return sys_w.gd_error;
+        if ((gs.plw[1].wu.operator == 0) && (CPU_Rec[1] == 0) && (Replay_Status[1] == 1)) {
+            p2sw_0 = 0;
+
+            Check_Replay_Status(1, 1);
+
+            if (Debug_w[0x21]) {
+                flPrintColor(0xFFFFFFFF);
+                flPrintL(0x10, 0xA, "FAKE REC!     PL2");
+            }
+        }
+    }
 }
 
 void cpLoopTask() {
-    struct _TASK* task_ptr = task;
-
     disp_ramcnt_free_area();
 
+#if defined(DEBUG)
     if (sysSLOW) {
         if (--Slow_Timer == 0) {
             sysSLOW = 0;
@@ -437,17 +410,11 @@ void cpLoopTask() {
             Game_pause |= 0x80;
         }
     }
+#endif
 
-    Process_Counter = 1;
+    for (int i = 0; i < 11; i++) {
+        struct _TASK* task_ptr = &task[i];
 
-    if (Turbo && (Game_pause != 0x81)) {
-        if (--Turbo_Timer == 0) {
-            Turbo_Timer = Turbo;
-            Process_Counter = 2;
-        }
-    }
-
-    for (current_task_num = 0; current_task_num < 11; current_task_num++) {
         switch (task_ptr->condition) {
         case 1:
             task_ptr->func_adrs(task_ptr);
@@ -460,8 +427,6 @@ void cpLoopTask() {
         case 3:
             break;
         }
-
-        task_ptr += 1;
     }
 }
 

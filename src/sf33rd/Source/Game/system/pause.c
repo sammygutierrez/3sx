@@ -17,10 +17,7 @@
 #include "sf33rd/Source/Game/system/work_sys.h"
 #include "sf33rd/Source/Game/ui/sc_sub.h"
 
-// sbss
 u8 PAUSE_X;
-u8 Stock_Turbo_Timer;
-u8 Stock_Process_Counter;
 
 void Pause_Task(struct _TASK* task_ptr);
 
@@ -192,8 +189,6 @@ void Exit_Pause(struct _TASK* task_ptr) {
     Game_pause = 0;
     Pause = 0;
     Pause_Down = 0;
-    Turbo_Timer = Stock_Turbo_Timer;
-    Process_Counter = Stock_Process_Counter;
 
     for (ix = 0; ix < 4; ix++) {
         task_ptr->r_no[ix] = 0;
@@ -219,8 +214,6 @@ void Setup_Pause(struct _TASK* task_ptr) {
     task_ptr->r_no[0] = 1;
     task_ptr->r_no[2] = 1;
     task_ptr->free[0] = 1;
-    Stock_Turbo_Timer = Turbo_Timer;
-    Stock_Process_Counter = Process_Counter;
     cpReadyTask(TASK_MENU, Menu_Task);
     task[TASK_MENU].r_no[0] = 1;
     Exit_Menu = 0;
@@ -245,8 +238,6 @@ void Setup_Come_Out(struct _TASK* task_ptr) {
     task_ptr->r_no[0] = 1;
     task_ptr->r_no[2] = 4;
     task_ptr->free[0] = 1;
-    Stock_Turbo_Timer = Turbo_Timer;
-    Stock_Process_Counter = Process_Counter;
     cpReadyTask(TASK_MENU, Menu_Task);
     task[TASK_MENU].r_no[0] = 1;
     Exit_Menu = 0;

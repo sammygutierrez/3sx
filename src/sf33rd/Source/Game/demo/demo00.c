@@ -61,7 +61,7 @@ s32 Warning() {
         break;
 
     case 6:
-        if ((Usage == 7) && (((p1sw_0 & 0x4FF0) | (p2sw_0 & 0x4FF0)) != 0)) {
+        if (((p1sw_0 & 0x4FF0) | (p2sw_0 & 0x4FF0)) != 0) {
             D_Timer = 2;
             D_No[1] = 7;
             FadeInit();
@@ -261,10 +261,10 @@ void Put_char(const f32* ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy
         tex[1].v = tex[3].v = *ptr++;
         off_x = *ptr++;
         off_y = *ptr++;
-        tex[0].x = tex[1].x = Frame_Zoom_X * (x + off_x * zx);
-        tex[0].y = tex[2].y = Frame_Zoom_Y * (y + off_y * zy);
-        tex[2].x = tex[3].x = Frame_Zoom_X * (x + (off_x * zx) + ((u32)*ptr++ * zx));
-        tex[1].y = tex[3].y = Frame_Zoom_Y * (y + (off_y * zy) + ((u32)*ptr++ * zy));
+        tex[0].x = tex[1].x = (x + off_x * zx);
+        tex[0].y = tex[2].y = (y + off_y * zy);
+        tex[2].x = tex[3].x = (x + (off_x * zx) + ((u32)*ptr++ * zx));
+        tex[1].y = tex[3].y = (y + (off_y * zy) + ((u32)*ptr++ * zy));
         njDrawTexture(tex, 4, indexG, 1);
     }
 }
