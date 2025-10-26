@@ -45,6 +45,7 @@
 #include "sf33rd/Source/Game/main.h"
 #include "sf33rd/Source/Game/menu/dir_data.h"
 #include "sf33rd/Source/Game/menu/ex_data.h"
+#include "sf33rd/Source/Game/netplay.h"
 #include "sf33rd/Source/Game/rendering/color3rd.h"
 #include "sf33rd/Source/Game/rendering/mmtmcnt.h"
 #include "sf33rd/Source/Game/rendering/texgroup.h"
@@ -395,15 +396,22 @@ void Mode_Select(struct _TASK* task_ptr) {
 
             case 1:
                 Setup_VS_Mode(task_ptr);
-                G_No[1] = 0xC;
+                G_No[1] = 12;
                 G_No[2] = 1;
                 Mode_Type = MODE_VERSUS;
                 cpExitTask(TASK_MENU);
                 break;
 
+            case 4:
+#if defined(NETPLAY_ENABLED)
+                Netplay_Begin();
+                break;
+#else
+                /* fallthrough */
+#endif
+
             case 2:
             case 3:
-            case 4:
             case 5:
             case 6:
                 task_ptr->r_no[2] += 1;
@@ -2975,7 +2983,9 @@ u16 Check_Menu_Lever(u8 PL_id, s16 type) {
     return 0;
 }
 
-void Suspend_Menu(struct _TASK* /* unused */) {}
+void Suspend_Menu(struct _TASK* /* unused */) {
+    // Do nothing
+}
 
 void In_Game(struct _TASK* task_ptr) {
     void (*In_Game_Jmp_Tbl[5])() = { Menu_Init, Menu_Select, Button_Config_in_Game, Character_Change, Pad_Come_Out };
@@ -5441,7 +5451,7 @@ void Back_to_Mode_Select(struct _TASK* task_ptr) {
 
     FadeOut(1, 0xFF, 8);
     G_No[0] = 2;
-    G_No[1] = 0xC;
+    G_No[1] = 12;
     G_No[2] = 0;
     G_No[3] = 0;
     E_No[0] = 1;

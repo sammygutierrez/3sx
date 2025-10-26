@@ -44,6 +44,7 @@ add_executable(3sx MACOSX_BUNDLE
 
 target_compile_definitions(3sx PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
+    $<$<CONFIG:Debug>:NETPLAY_ENABLED>
     $<$<CONFIG:Release>:RELEASE>
     TARGET_SDL3
     _POSIX_C_SOURCE
@@ -93,6 +94,7 @@ target_compile_options(3sx PRIVATE
 target_link_libraries(3sx PRIVATE
     m
     GekkoNet
+    stdc++
 )
 
 set_target_properties(3sx PROPERTIES

@@ -1008,10 +1008,10 @@ void Soft_Reset_Sub() {
     cpExitTask(TASK_SAVER);
     cpExitTask(TASK_PAUSE);
     Reset_Sub0();
-    task->r_no[0] = 1;
-    task->r_no[1] = 0;
-    task->r_no[2] = 0;
-    task->r_no[3] = 0;
+    task[TASK_INIT].r_no[0] = 1;
+    task[TASK_INIT].r_no[1] = 0;
+    task[TASK_INIT].r_no[2] = 0;
+    task[TASK_INIT].r_no[3] = 0;
     vm_w.Request = 0;
     vm_w.Access = 0;
 }
@@ -1255,7 +1255,7 @@ void Replay(s16 PL_id) {
         Replay_Status[0] = 2;
         Replay_Status[1] = 2;
 
-        if (Mode_Type == 5) {
+        if (Mode_Type == MODE_REPLAY) {
             cpExitTask(TASK_PAUSE);
             cpReadyTask(TASK_MENU, Menu_Task);
             task[TASK_MENU].r_no[0] = 13;
