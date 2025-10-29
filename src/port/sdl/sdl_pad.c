@@ -318,6 +318,12 @@ void SDLPad_HandleKeyboardEvent(SDL_KeyboardEvent* event) {
     case SDLK_RETURN:
         state->start = event->down;
         break;
+
+#if defined(DEBUG)
+    case SDLK_TAB:
+        state->right_stick = event->down;
+        break;
+#endif
     }
 }
 

@@ -89,6 +89,12 @@ void keyConvert() {
         }
 
         io_w.sw[i] = 0;
+
+        // Block game inputs from being converted when debug menu is active.
+        if (debug_menu_active) {
+            continue;
+        }
+
         currSw = pad->sw;
 
         for (j = 0; j < 4; j++) {

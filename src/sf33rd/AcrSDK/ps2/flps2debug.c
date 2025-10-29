@@ -13,6 +13,12 @@
 #include <stdio.h>
 #include <string.h>
 
+void flPS2DebugInit() {
+    flDebugStrHan = flPS2GetSystemMemoryHandle(0x12C0 * sizeof(RenderBuffer), 1);
+    flDebugStrCtr = 0;
+    flDebugStrCol = 0xFFFFFFFF; // White color
+}
+
 // FIXME: reimplement using SDL apis
 s32 flPrintL(s32 posi_x, s32 posi_y, const s8* format, ...) {
     s8 code;

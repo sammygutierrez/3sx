@@ -1,9 +1,10 @@
 #include "port/sdl/sdl_app.h"
 #include "common.h"
-#include "port/sound/adx.h"
+#include "port/sdl/sdl_debug_text.h"
 #include "port/sdl/sdl_game_renderer.h"
 #include "port/sdl/sdl_message_renderer.h"
 #include "port/sdl/sdl_pad.h"
+#include "port/sound/adx.h"
 #include "sf33rd/AcrSDK/ps2/foundaps2.h"
 #include "sf33rd/Source/Game/main.h"
 
@@ -72,6 +73,9 @@ int SDLApp_Init() {
 
     // Initialize game renderer
     SDLGameRenderer_Init(renderer);
+
+    // Initialize debug text renderer
+    SDLDebugText_Initialize(renderer);
 
     // Initialize screen texture
     create_screen_texture();
@@ -177,6 +181,7 @@ void SDLApp_BeginFrame() {
 
     SDLMessageRenderer_BeginFrame();
     SDLGameRenderer_BeginFrame();
+    SDLDebugText_BeginFrame();
 }
 
 static SDL_FRect get_letterbox_rect(int win_w, int win_h) {
@@ -263,10 +268,15 @@ void SDLApp_EndFrame() {
     }
 
 #if defined(DEBUG)
+    // Render debug text
+    SDLDebugText_Render();
+
     // Render metrics
+    int window_width;
+    SDL_GetRenderOutputSize(renderer, &window_width, NULL);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_SetRenderScale(renderer, 2, 2);
-    SDL_RenderDebugTextFormat(renderer, 8, 8, "FPS: %.3f", fps);
+    SDL_RenderDebugTextFormat(renderer, (window_width / 2) - 88, 2, "FPS: %.3f", fps);
     SDL_SetRenderScale(renderer, 1, 1);
 #endif
 

@@ -562,19 +562,19 @@ void plcnt_move() {
     }
 
 #if defined(DEBUG)
-    if (debug_config.player_1_invincible) {
+    if (DebugConfig_Get(DEBUG_PLAYER_1_INVINCIBLE)) {
         gs.plw[0].wu.dm_vital = 0;
     }
 
-    if (debug_config.player_2_invincible) {
+    if (DebugConfig_Get(DEBUG_PLAYER_2_INVINCIBLE)) {
         gs.plw[1].wu.dm_vital = 0;
     }
 
-    if (debug_config.player_1_one_hit_ko) {
+    if (DebugConfig_Get(DEBUG_PLAYER_1_NO_LIFE)) {
         gs.plw[0].wu.vital_new = 0;
     }
 
-    if (debug_config.player_2_one_hit_ko) {
+    if (DebugConfig_Get(DEBUG_PLAYER_2_NO_LIFE)) {
         gs.plw[1].wu.vital_new = 0;
     }
 #endif

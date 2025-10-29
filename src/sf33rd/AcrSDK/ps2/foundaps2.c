@@ -41,6 +41,7 @@ s32 flInitialize() {
     flPS2SystemTmpBuffInit();
     flPS2InitRenderBuff();
     flPADInitialize();
+    flPS2DebugInit();
 
     return 1;
 }

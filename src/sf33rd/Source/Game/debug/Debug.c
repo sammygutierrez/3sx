@@ -2,9 +2,6 @@
 #include "common.h"
 #include "sf33rd/AcrSDK/common/mlPAD.h"
 #include "sf33rd/AcrSDK/ps2/flps2debug.h"
-#include "sf33rd/Source/Game/debug/Deb_Data.h"
-#include "sf33rd/Source/Game/debug/Debug_ID.h"
-#include "sf33rd/Source/Game/debug/Nakai.h"
 #include "sf33rd/Source/Game/debug/OBJTEST.h"
 #include "sf33rd/Source/Game/effect/effect.h"
 #include "sf33rd/Source/Game/engine/plcnt.h"
@@ -21,7 +18,8 @@
 #define COLOR_YELLOW 0xFFFFFF00
 
 // sbss
-s8 Debug_w[72];
+bool debug_menu_active;
+u8 Debug_ID;
 s8 Debug_Index;
 u8 Deley_Debug_No;
 u8 Deley_Debug_Timer;
@@ -61,19 +59,12 @@ void Debug_Task(struct _TASK* task_ptr) {
 }
 
 void Debug_Init(struct _TASK* task_ptr) {
-    u8* ptr;
-    u16 ix;
-
     task_ptr->r_no[0] += 1;
     Debug_Index = 0;
     Debug_Pause = 0;
-    ptr = (u8*)NAKAI_debug_data;
-    Debug_Index = NAKAI_debug_data[72];
 
-    for (ix = 0; ix < 72; ptr++) {
-        Debug_w[ix] = *ptr;
-        ix += 1;
-    }
+    // Initialize debug configuration to defaults
+    DebugConfig_Init();
 
     if ((flpad_adr[0]->sw | flpad_adr[0][1].sw) & 0x4000) {
         Debug_w[0x2C] = 1;
@@ -81,52 +72,54 @@ void Debug_Init(struct _TASK* task_ptr) {
 }
 
 void Debug_1st(struct _TASK* task_ptr) {
+    task_ptr->r_no[0] += 1; // Progress to Debug_2nd
     sysFF = 1;
     return;
 }
 
 void Debug_2nd(struct _TASK* task_ptr) {
-#if defined(TARGET_PS2)
-    void Debug_Menu_Disp(s16, s16);
+#if defined(DEBUG)
+    // Check for toggle: right stick click to show/hide debug menu
+    if ((io_w.data[0].sw_new & SWK_RIGHT_STICK) || (io_w.data[1].sw_new & SWK_RIGHT_STICK)) {
+        debug_menu_active = !debug_menu_active;
+    }
+
+    // Only show and interact with debug menu when active
+    if (debug_menu_active) {
+        u16 sw;
+        s16 offset_y[4];
+
+        offset_y[0] = 2;
+        offset_y[1] = 6;
+        offset_y[2] = 2;
+        flPrintColor(-256);
+        flPrintL(1, 1, "[DEBUG MODE]");
+        flPrintL(14, 1, (s8*)debug_profile_name_data[Debug_ID]);
+
+        if ((sw = Debug_Menu_Shot())) {
+            if (sw == 256) {
+                Debug_w[Debug_Index] = 0;
+            }
+
+            if ((sw == 32) && (--Debug_w[Debug_Index] < 0)) {
+                Debug_w[Debug_Index] = debug_string_data[Debug_Index].max;
+            }
+
+            if ((sw == 16) && (++Debug_w[Debug_Index] > debug_string_data[Debug_Index].max)) {
+                Debug_w[Debug_Index] = 0;
+            }
+        } else {
+            sw = Debug_Menu_Lever();
+            Debug_Move_Sub(sw);
+        }
+
+        Debug_Menu_Disp(offset_y[1], offset_y[2]);
+    }
 #endif
-
-    u16 sw;
-    s16 offset_y[4];
-
-    offset_y[0] = 2;
-    offset_y[1] = 6;
-    offset_y[2] = 2;
-    flPrintColor(-256);
-    flPrintL(1, 1, "[DEBUG MODE]");
-    flPrintL(14, 1, (s8*)debug_name_data[Debug_ID]);
-
-    if ((sw = Debug_Menu_Shot())) {
-        if (sw == 256) {
-            Debug_w[Debug_Index] = 0;
-        }
-
-        if ((sw == 32) && (--Debug_w[Debug_Index] < 0)) {
-            Debug_w[Debug_Index] = debug_string_data[Debug_Index].max;
-        }
-
-        if ((sw == 16) && (++Debug_w[Debug_Index] > debug_string_data[Debug_Index].max)) {
-            Debug_w[Debug_Index] = 0;
-        }
-    } else {
-        sw = Debug_Menu_Lever();
-        Debug_Move_Sub(sw);
-    }
-
-    Debug_Menu_Disp(offset_y[1], offset_y[2]);
-
-    if (io_w.data[1].sw_new & SWK_RIGHT_STICK) {
-        mpp_w.sysStop = true;
-        task_ptr->r_no[0] = 1;
-        cpRevivalTask();
-    }
 }
 
 void Debug_Menu_Disp(u32 /* unused */, u32 /* unused */) {
+#if defined(DEBUG)
     s16 side;
     s16 ix;
     s16 i;
@@ -142,11 +135,13 @@ void Debug_Menu_Disp(u32 /* unused */, u32 /* unused */) {
         for (i = 0; i < 24;) {
             if (Debug_Index != ix) {
                 flPrintColor(COLOR_WHITE);
+                flPrintL(x, y, " ");
             } else {
                 flPrintColor(COLOR_YELLOW);
+                flPrintL(x, y, ">"); // Arrow indicator for selected item
             }
 
-            flPrintL(x, y, debug_string_data[ix].name);
+            flPrintL(x + 1, y, debug_string_data[ix].name);
             flPrintL(x + 18, y, "%2X", Debug_w[ix]);
             i += 1;
             y += 2;
@@ -160,6 +155,7 @@ void Debug_Menu_Disp(u32 /* unused */, u32 /* unused */) {
 
     flPrintColor(COLOR_WHITE);
     flPrintL(1, 52, "SPR-MAX : %d", seqsGetSprMax());
+#endif
 }
 
 void Debug_Move_Sub(u16 sw) {
@@ -229,8 +225,8 @@ s32 Debug_Menu_Lever() {
     u16 lever;
     u16 ix;
 
-    lever = io_w.data[1].sw & SWK_DIRECTIONS;
-    sw = io_w.data[1].sw_new;
+    lever = (io_w.data[0].sw | io_w.data[1].sw) & SWK_DIRECTIONS;
+    sw = io_w.data[0].sw_new | io_w.data[1].sw_new;
 
     if (sw & (SWK_WEST | SWK_NORTH | SWK_SOUTH)) {
         return sw;
@@ -272,8 +268,8 @@ u16 Debug_Menu_Shot() {
     u16 sw;
     u16 shot;
 
-    shot = io_w.data[1].sw & (SWK_WEST | SWK_NORTH | SWK_SOUTH);
-    sw = io_w.data[1].sw_new;
+    shot = (io_w.data[0].sw | io_w.data[1].sw) & (SWK_WEST | SWK_NORTH | SWK_SOUTH);
+    sw = io_w.data[0].sw_new | io_w.data[1].sw_new;
 
     if (sw & SWK_WEST) {
         return sw;
