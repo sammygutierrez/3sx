@@ -7,11 +7,8 @@
 /// @param renderer SDL renderer to use for debug text
 void SDLDebugText_Initialize(SDL_Renderer* renderer);
 
-/// @brief Reset debug text buffer at the beginning of each frame
-void SDLDebugText_BeginFrame();
-
 /// @brief Render debug text buffer to screen
-/// Called each frame to display debug text from flPrintL calls
+/// Called each frame to display debug text from flPrintL calls.
 void SDLDebugText_Render();
 
 /// @brief Destroy the debug text renderer

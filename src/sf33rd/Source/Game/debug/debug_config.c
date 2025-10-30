@@ -77,8 +77,8 @@ const DEBUG_STR_DAT debug_string_data[72] = { { .max = 255, .name = "SLOW" },
                                               { .max = 255, .name = "NAKAGAWA EXPERIMENT" } };
 
 // Debug menu profile names
-u8* debug_profile_name_data[5] = {
-    (u8*)"For NAKAI 600", (u8*)"For GENTLEMAN", (u8*)"For NAKAGAWA JIKKEN", (u8*)"For Oh!Ya!", (u8*)"For IBARAKI UNCLE"
+const char* debug_profile_name_data[5] = {
+    "For NAKAI 600", "For GENTLEMAN", "For NAKAGAWA JIKKEN", "For Oh!Ya!", "For IBARAKI UNCLE"
 };
 
 // Default values for all debug options (from original NAKAI_debug_data)
@@ -101,14 +101,16 @@ void DebugConfig_Init() {
 }
 
 s8 DebugConfig_Get(DebugOption option) {
-    if (option >= DEBUG_OPTION_COUNT)
+    if (option >= DEBUG_OPTION_COUNT) {
         return 0;
+    }
     return debug_config.values[option];
 }
 
 void DebugConfig_Set(DebugOption option, s8 value) {
-    if (option >= DEBUG_OPTION_COUNT)
+    if (option >= DEBUG_OPTION_COUNT) {
         return;
+    }
 
     // Clamp to valid range
     if (value > debug_string_data[option].max) {

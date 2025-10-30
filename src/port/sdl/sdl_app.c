@@ -74,8 +74,10 @@ int SDLApp_Init() {
     // Initialize game renderer
     SDLGameRenderer_Init(renderer);
 
+#if defined(DEBUG)
     // Initialize debug text renderer
     SDLDebugText_Initialize(renderer);
+#endif
 
     // Initialize screen texture
     create_screen_texture();
@@ -181,7 +183,6 @@ void SDLApp_BeginFrame() {
 
     SDLMessageRenderer_BeginFrame();
     SDLGameRenderer_BeginFrame();
-    SDLDebugText_BeginFrame();
 }
 
 static SDL_FRect get_letterbox_rect(int win_w, int win_h) {

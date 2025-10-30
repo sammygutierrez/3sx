@@ -7,14 +7,14 @@
 ///
 /// Associates a debug option name with its maximum value.
 typedef struct {
-    u8 max;   ///< Maximum value for this debug option
-    s8* name; ///< Name string for the debug option
+    u8 max;           ///< Maximum value for this debug option
+    const char* name; ///< Name string for the debug option
 } DEBUG_STR_DAT;
 
 /// @brief Debug configuration options
 ///
 /// Enumeration of all available debug options that can be toggled or adjusted.
-typedef enum {
+typedef enum DebugOption {
     DEBUG_SLOW = 0,
     DEBUG_FAST = 1,
     DEBUG_SYSTEM_INFO = 2,
@@ -106,7 +106,7 @@ extern DebugConfig debug_config;
 extern const DEBUG_STR_DAT debug_string_data[DEBUG_OPTION_COUNT];
 
 /// @brief Debug profile name data
-extern u8* debug_profile_name_data[5];
+extern const char* debug_profile_name_data[5];
 
 /// @brief Initialize debug configuration system
 ///
@@ -138,27 +138,9 @@ void DebugConfig_Set(DebugOption option, s8 value);
 
 /// @brief Stub debug array for release builds
 ///
-/// Exists for compatibility but has no functional effect in release builds.
+/// Exists for compatibility with code that accesses Debug_w outside of DEBUG blocks.
+/// Has no functional effect in release builds.
 extern s8 Debug_w[DEBUG_OPTION_COUNT];
-
-/// @brief Stub function that returns 0 in release builds
-///
-/// @param option Ignored in release builds
-/// @return Always returns 0
-static inline s8 DebugConfig_Get(DebugOption option) {
-    return 0;
-}
-
-/// @brief Stub function that does nothing in release builds
-///
-/// @param option Ignored in release builds
-/// @param value Ignored in release builds
-static inline void DebugConfig_Set(DebugOption option, s8 value) {}
-
-/// @brief Stub initialization function for release builds
-///
-/// Does nothing in release builds since debug system is disabled.
-static inline void DebugConfig_Init() {}
 
 #endif // DEBUG
 

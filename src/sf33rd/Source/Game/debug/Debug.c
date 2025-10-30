@@ -63,8 +63,10 @@ void Debug_Init(struct _TASK* task_ptr) {
     Debug_Index = 0;
     Debug_Pause = 0;
 
+#if defined(DEBUG)
     // Initialize debug configuration to defaults
     DebugConfig_Init();
+#endif
 
     if ((flpad_adr[0]->sw | flpad_adr[0][1].sw) & 0x4000) {
         Debug_w[0x2C] = 1;
